@@ -21,6 +21,7 @@ public class Main {
 
     public static void main(String[] args) throws FileNotFoundException {
 
+        Connection con = null;
 
         org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
 
@@ -36,15 +37,40 @@ public class Main {
                 String[] arr = new String[10];
 
                 arr[0] = JObject.get("id").toString();
-                arr[1] = JObject.get("link_id").toString();
-                arr[2] = JObject.get("name").toString();
-                arr[3] = JObject.get("author").toString();
-                arr[4] = JObject.get("body").toString();
-                arr[5] = JObject.get("subreddit_id").toString();
-                arr[6] = JObject.get("subreddit").toString();
-                arr[7] = JObject.get("score").toString();
-                arr[8] = JObject.get("id").toString();
-                arr[9] = JObject.get("id").toString();
+                arr[1] = JObject.get("parent_id").toString();
+                arr[2] = JObject.get("link_id").toString();
+                arr[3] = JObject.get("name").toString();
+                arr[4] = JObject.get("author").toString();
+                arr[5] = JObject.get("body").toString();
+                arr[6] = JObject.get("subreddit_id").toString();
+                arr[7] = JObject.get("subreddit").toString();
+                arr[8] = JObject.get("score").toString();
+                arr[9] = JObject.get("created_utc").toString();
+
+                //first we connect to the database using DriverManager
+                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/redditDatabase", "root", "");
+
+                String tableStuff = "INSERT INTO User(id, parent_id, link_id, namee, author, body, subreddit_id, subreddit, score, created_utc) VALUES (?,?,?,?,?,?,?,?,?,?)";
+                PreparedStatement prep = con.prepareStatement(tableStuff);
+
+                for(int i = 0; i < arr.length; i++){
+
+                    prep.setString(1, arr[0]);
+                    prep.setString(2, arr[1]);
+                    prep.setString(3, arr[2]);
+                    prep.setString(4, arr[3]);
+                    prep.setString(5, arr[4]);
+                    prep.setString(6, arr[5]);
+                    prep.setString(7, arr[6]);
+                    prep.setString(8, arr[7]);
+                    prep.setString(9, arr[8]);
+                    prep.setString(1, arr[9]);
+
+
+                }
+
+                prep.executeBatch();
+
 
                 /*
                 String link_id = (String) JObject.get("link_id");
@@ -62,24 +88,34 @@ public class Main {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (SQLException e1) {
+            e1.printStackTrace();
         }
+
+        finally {
+
+            try {
+                //if the connection is still open, close it.
+                if (con != null) {
+                    con.close();
+                }
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+    }
     }
 
 
+
+    /*
     public void DBConnect(){
 
         Connection con = null;
 
         try{
-            //first we connect to the database using DriverManager
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/redditDatabase", "markuslyconhold", "bruh");
 
-            //now we create a statement so that we can get quieries.
-
-            Statement s = con.createStatement();
-
-            //once this query has executed , the resultset will be populated by this result.
-            ResultSet rs = s.executeQuery("SELECT * FROM brbr LIMIT 10");
 
 
             while(rs.next()){
@@ -107,7 +143,7 @@ public class Main {
         }
     }
 
-
+*/
 
 
 
@@ -117,6 +153,8 @@ public class Main {
         Connection con = null;
 
         try{
+
+
             //first we connect to the database using DriverManager
             con = DriverManager.getConnection("jdbc:mysql:test.db");
 
