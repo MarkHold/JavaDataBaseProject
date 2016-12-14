@@ -92,4 +92,51 @@ public class db {
         prep.setString(3, lastName);
         prep.execute();
     }
+
+
+     /*
+
+        //first we create a connection and set it to null because we dont have a connection at the start.
+        Connection con = null;
+
+        try{
+
+
+            //first we connect to the database using DriverManager
+            con = DriverManager.getConnection("jdbc:mysql:test.db");
+
+            //now we create a statement so that we can get quieries.
+
+            Statement s = con.createStatement();
+
+            //once this query has executed , the resultset will be populated by this result.
+            ResultSet rs = s.executeQuery("SELECT * FROM brbr LIMIT 10");
+
+
+            while(rs.next()){
+                System.out.println("Name: " + rs.getString("name"));
+                System.out.println("id: " + rs.getInt("id"));
+            }
+
+        } catch (SQLException e) {
+
+            System.out.println(e.getMessage());
+        }
+        //we do finally as well because we know it will be executed no matter what.
+        finally {
+
+            try {
+                //if the connection is still open, close it.
+                if (con != null) {
+                    con.close();
+                }
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+*/
+
 }

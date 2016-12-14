@@ -17,24 +17,73 @@ import org.json.simple.parser.ParseException;
  */
 public class Main {
 
-    private static String file = "/Users/markuslyconhold/IdeaProjects/JavaDataBaseProject/theFile.txt";
+    private static String file = "/Users/markuslyconhold/IdeaProjects/JavaDataBaseProject/RC_2007-1";
 
-    public static void main(String[] args) throws FileNotFoundException {
+    private static boolean hasData = false;
 
-        Connection con = null;
+    private static String[] arr = new String[10];
+
+    private static Connection con;
+    public static void main(String[] args) throws FileNotFoundException, SQLException, ClassNotFoundException {
+
+        if(con == null){
+            startConnection();
+        }
+
+    }
+
+
+    public static void startConnection() throws ClassNotFoundException, SQLException {
+
+        Class.forName("org.sqlite.JDBC");
+        con = DriverManager.getConnection("jdbc:sqlite:theDataBase.db");
+        initialise();
+    }
+
+    public static void createTable() throws SQLException {
+
+        Statement state2 = con.createStatement();
+
+        //the table
+        state2.execute("CREATE TABLE IF NOT EXISTS redditTablexoxoo(id varchar(30), parent_id varchar(30), link_id varchar(30), namee varchar(30), " +
+                "author varchar(30), body varchar(30000), subreddit_id varchar(30), subreddit varchar(30), " +
+                " score varchar(30), created_utc varchar(30),primary key(id));");
+
+        String tableStuff = "INSERT INTO redditTablexoxoo(id, parent_id, link_id, namee, author, body, subreddit_id, subreddit, score, created_utc) VALUES (?,?,?,?,?,?,?,?,?,?)";
+        PreparedStatement prep = con.prepareStatement(tableStuff);
+
+        for(int i = 0; i < arr.length; i++){
+
+            prep.setString(1, arr[0]);
+            prep.setString(2, arr[1]);
+            prep.setString(3, arr[2]);
+            prep.setString(4, arr[3]);
+            prep.setString(5, arr[4]);
+            prep.setString(6, arr[5]);
+            prep.setString(7, arr[6]);
+            prep.setString(8, arr[7]);
+            prep.setString(9, arr[8]);
+            prep.setString(1, arr[9]);
+        }
+        prep.executeBatch();
+
+    }
+
+    //initialize metoden som läser filen och stoppar all data i en string array.
+    public static void initialise() throws SQLException, ClassNotFoundException {
+
 
         org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
 
         try{
-            Object obj = parser.parse(new FileReader("/Users/markuslyconhold/IdeaProjects/JavaDataBaseProject/theFile.txt"));
+            JSONParser parseNew  = new JSONParser();
 
-            JSONObject JObject = (JSONObject) obj;
             String line;
             BufferedReader bf = new BufferedReader(new FileReader(file));
-
             while ((line = bf.readLine()) != null) {
 
-                String[] arr = new String[10];
+                Object obj = parser.parse(line);
+                JSONObject JObject = (JSONObject) obj;
 
                 arr[0] = JObject.get("id").toString();
                 arr[1] = JObject.get("parent_id").toString();
@@ -46,150 +95,28 @@ public class Main {
                 arr[7] = JObject.get("subreddit").toString();
                 arr[8] = JObject.get("score").toString();
                 arr[9] = JObject.get("created_utc").toString();
-
-                //first we connect to the database using DriverManager
-                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/redditDatabase", "root", "");
-
-                String tableStuff = "INSERT INTO User(id, parent_id, link_id, namee, author, body, subreddit_id, subreddit, score, created_utc) VALUES (?,?,?,?,?,?,?,?,?,?)";
-                PreparedStatement prep = con.prepareStatement(tableStuff);
-
-                for(int i = 0; i < arr.length; i++){
-
-                    prep.setString(1, arr[0]);
-                    prep.setString(2, arr[1]);
-                    prep.setString(3, arr[2]);
-                    prep.setString(4, arr[3]);
-                    prep.setString(5, arr[4]);
-                    prep.setString(6, arr[5]);
-                    prep.setString(7, arr[6]);
-                    prep.setString(8, arr[7]);
-                    prep.setString(9, arr[8]);
-                    prep.setString(1, arr[9]);
-
-
-                }
-
-                prep.executeBatch();
-
-
-                /*
-                String link_id = (String) JObject.get("link_id");
-                String name = (String) JObject.get("name");
-                String author = (String) JObject.get("author");
-                String body = (String) JObject.get("body");
-                String subreddit_id = (String) JObject.get("subreddit_id");
-                String subreddit = (String) JObject.get("subreddit_id");
-                int score = (Integer) JObject.get("subreddit_id");
-                int created_utc = (Integer) JObject.get("subreddit_id");
-                */
             }
 
         } catch (ParseException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (SQLException e1) {
-            e1.printStackTrace();
         }
 
-        finally {
-
-            try {
-                //if the connection is still open, close it.
-                if (con != null) {
-                    con.close();
-                }
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
+        createTable();
 
     }
+
+    public void destroyTable(){
+
     }
 
+    public void  queries() throws SQLException {
 
+        Statement state = con.createStatement();
 
-    /*
-    public void DBConnect(){
+        //writing the first query.
+        ResultSet res = state.executeQuery("SELECT id FROM sqlite master WHERE type ='table' AND name = 'user'");
 
-        Connection con = null;
-
-        try{
-
-
-
-            while(rs.next()){
-                System.out.println("Name: " + rs.getString("name"));
-                System.out.println("id: " + rs.getInt("id"));
-            }
-
-        } catch (SQLException e) {
-
-            System.out.println(e.getMessage());
-        }
-        //we do finally as well because we know it will be executed no matter what.
-        finally {
-
-            try {
-                //if the connection is still open, close it.
-                if (con != null) {
-                    con.close();
-                }
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        }
     }
-
-*/
-
-
-
-        /*
-
-        //first we create a connection and set it to null because we dont have a connection at the start.
-        Connection con = null;
-
-        try{
-
-
-            //first we connect to the database using DriverManager
-            con = DriverManager.getConnection("jdbc:mysql:test.db");
-
-            //now we create a statement so that we can get quieries.
-
-            Statement s = con.createStatement();
-
-            //once this query has executed , the resultset will be populated by this result.
-            ResultSet rs = s.executeQuery("SELECT * FROM brbr LIMIT 10");
-
-
-            while(rs.next()){
-                System.out.println("Name: " + rs.getString("name"));
-                System.out.println("id: " + rs.getInt("id"));
-            }
-
-        } catch (SQLException e) {
-
-            System.out.println(e.getMessage());
-        }
-        //we do finally as well because we know it will be executed no matter what.
-        finally {
-
-            try {
-                //if the connection is still open, close it.
-                if (con != null) {
-                    con.close();
-                }
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-*/
-
 }
