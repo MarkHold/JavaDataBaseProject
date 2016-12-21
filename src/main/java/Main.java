@@ -17,14 +17,10 @@ import org.json.simple.parser.ParseException;
  */
 public class Main {
 
-    private static String file = "/Users/markuslyconhold/IdeaProjects/JavaDataBaseProject/RC_2007-1";
-
     private static boolean hasData = false;
 
-    private static String[] arr = new String[10];
-
     private static Connection con;
-    public static void main(String[] args) throws FileNotFoundException, SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, SQLException, ClassNotFoundException, ParseException {
 
         if(con == null){
             startConnection();
@@ -33,81 +29,57 @@ public class Main {
     }
 
 
-    public static void startConnection() throws ClassNotFoundException, SQLException {
+    public static void startConnection() throws ClassNotFoundException, SQLException, IOException, ParseException {
 
         Class.forName("org.sqlite.JDBC");
         con = DriverManager.getConnection("jdbc:sqlite:theDataBase.db");
-        initialise();
+        //initialise();
+        Initialise();
     }
 
-    public static void createTable() throws SQLException {
 
-        Statement state2 = con.createStatement();
+    //in this method we import the data from the file and parse it
+    public static void Initialise() throws SQLException, IOException, ParseException {
 
-        //the table
-        state2.execute("CREATE TABLE IF NOT EXISTS redditTablexoxoo(id varchar(30), parent_id varchar(30), link_id varchar(30), namee varchar(30), " +
-                "author varchar(30), body varchar(30000), subreddit_id varchar(30), subreddit varchar(30), " +
-                " score varchar(30), created_utc varchar(30),primary key(id));");
+            Statement state2 = con.createStatement();
 
-        String tableStuff = "INSERT INTO redditTablexoxoo(id, parent_id, link_id, namee, author, body, subreddit_id, subreddit, score, created_utc) VALUES (?,?,?,?,?,?,?,?,?,?)";
-        PreparedStatement prep = con.prepareStatement(tableStuff);
+            //the table
+            state2.execute("CREATE TABLE IF NOT EXISTS redditTablex(id varchar(30), parent_id varchar(30), link_id varchar(30), namee varchar(30), " +
+                    "author varchar(30), body varchar(30000), subreddit_id varchar(30), subreddit varchar(30), " +
+                    " score varchar(30), created_utc varchar(30))");
 
-        for(int i = 0; i < arr.length; i++){
+            String tableStuff = "INSERT INTO redditTablex(id, parent_id, link_id, namee, author, body, subreddit_id, subreddit, score, created_utc) VALUES (?,?,?,?,?,?,?,?,?,?)";
+            PreparedStatement prep = con.prepareStatement(tableStuff);
 
-            prep.setString(1, arr[0]);
-            prep.setString(2, arr[1]);
-            prep.setString(3, arr[2]);
-            prep.setString(4, arr[3]);
-            prep.setString(5, arr[4]);
-            prep.setString(6, arr[5]);
-            prep.setString(7, arr[6]);
-            prep.setString(8, arr[7]);
-            prep.setString(9, arr[8]);
-            prep.setString(1, arr[9]);
-        }
-        prep.executeBatch();
+            BufferedReader bf;
 
-    }
+            bf = new BufferedReader(new FileReader("/Users/markuslyconhold/IdeaProjects/JavaDataBaseProject/RC_2007-1"));
 
-    //initialize metoden som läser filen och stoppar all data i en string array.
-    public static void initialise() throws SQLException, ClassNotFoundException {
+            JSONParser parser  = new JSONParser();
+            con.setAutoCommit(false);
+            String s;
 
+            while((s = bf.readLine()) != null){
 
-        org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
-
-        try{
-            JSONParser parseNew  = new JSONParser();
-
-            String line;
-            BufferedReader bf = new BufferedReader(new FileReader(file));
-            while ((line = bf.readLine()) != null) {
-
-                Object obj = parser.parse(line);
+                Object obj = parser.parse(s);
                 JSONObject JObject = (JSONObject) obj;
 
-                arr[0] = JObject.get("id").toString();
-                arr[1] = JObject.get("parent_id").toString();
-                arr[2] = JObject.get("link_id").toString();
-                arr[3] = JObject.get("name").toString();
-                arr[4] = JObject.get("author").toString();
-                arr[5] = JObject.get("body").toString();
-                arr[6] = JObject.get("subreddit_id").toString();
-                arr[7] = JObject.get("subreddit").toString();
-                arr[8] = JObject.get("score").toString();
-                arr[9] = JObject.get("created_utc").toString();
+                prep.setString(1, JObject.get("id").toString());
+                prep.setString(2, JObject.get("parent_id").toString());
+                prep.setString(3, JObject.get("link_id").toString());
+                prep.setString(4, JObject.get("name").toString());
+                prep.setString(5, JObject.get("author").toString());
+                prep.setString(6, JObject.get("body").toString());
+                prep.setString(7, JObject.get("subreddit_id").toString());
+                prep.setString(8, JObject.get("subreddit").toString());
+                prep.setString(9, JObject.get("score").toString());
+                prep.setString(10, JObject.get("created_utc").toString());
+                prep.execute();
+
+
             }
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        createTable();
-
-    }
-
-    public void destroyTable(){
+            con.commit();
+            con.setAutoCommit(true);
 
     }
 
@@ -116,7 +88,12 @@ public class Main {
         Statement state = con.createStatement();
 
         //writing the first query.
-        ResultSet res = state.executeQuery("SELECT id FROM sqlite master WHERE type ='table' AND name = 'user'");
+        ResultSet res = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
+        while(res.next()){
+            System.out.println("The name of the person we are looking for is: " + res.getString("name"));
+            System.out.println("The id of the person we are looking for is: " + res.getString("id"));
+        }
+
 
     }
 }
