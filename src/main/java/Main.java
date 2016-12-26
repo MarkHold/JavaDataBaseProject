@@ -81,17 +81,61 @@ public class Main {
             con.commit();
             con.setAutoCommit(true);
 
+        queries();
+
     }
 
-    public void  queries() throws SQLException {
+
+    //the method that contains the queries.
+    public static void queries() throws SQLException {
 
         Statement state = con.createStatement();
 
-        //writing the first query.
-        ResultSet res = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
-        while(res.next()){
-            System.out.println("The name of the person we are looking for is: " + res.getString("name"));
-            System.out.println("The id of the person we are looking for is: " + res.getString("id"));
+        //Query1
+        ResultSet q1 = state.executeQuery("SELECT parent_id FROM redditTablex WHERE link_id ='t3_5yba3' AND id = 'c0299ar'");
+        while(q1.next()){
+            System.out.println("1. How many comments have a specific user posted: " + q1.getString("parent_id"));
+        }
+        //Query2
+        ResultSet q2 = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
+        while(q2.next()){
+            System.out.println("2. How many comments does a specific subreddit get per day:  " + q2.getString("name"));
+        }
+
+        //Query3
+        ResultSet q3 = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
+        while(q3.next()){
+            System.out.println("3. How many comments include the word ‘lol’: "+ q3.getString("namse"));
+        }
+
+        //Query4
+        ResultSet q4 = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
+        while(q4.next()){
+            System.out.println("4. Users that commented on a specific link has also posted to which subreddits " + q4.getString("name"));
+        }
+
+        //Query5
+        ResultSet q5 = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
+        while(q5.next()){
+            System.out.println("5. Which users have the highest and lowest combined scores: " + q5.getString("zszs"));
+        }
+
+        //Query6
+        ResultSet q6 = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
+        while(q5.next()){
+            System.out.println("6. Which subreddits have the highest and lowest scored comments: " + q5.getString("zszs"));
+        }
+
+        //Query7
+        ResultSet q7 = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
+        while(q5.next()){
+            System.out.println("7. Given a specific user, list all the users he or she has potentially interacted with: " + q5.getString("zszs"));
+        }
+
+        //Query8
+        ResultSet q8 = state.executeQuery("SELECT id FROM redditTableNew WHERE type ='table' AND name = 'user'");
+        while(q5.next()){
+            System.out.println("8. Which users has only posted to a single subreddit: " + q5.getString("zszs"));
         }
 
 
